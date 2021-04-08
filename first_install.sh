@@ -8,7 +8,7 @@ sudo dnf groupinstall "Development Tools" -y
 sudo yum install git -y
 sudo dnf install bzip2-devel expat-devel gdbm-devel \
     ncurses-devel openssl-devel readline-devel wget \
-    sqlite-devel tk-devel xz-devel zlib-devel libffi-devel -y
+    sqlite-devel tk-devel xz-devel zlib-devel libffi-devel epel-release -y
 
 
 #set up .bash_prompt
@@ -147,6 +147,7 @@ curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poet
 cd ~/.poetry
 chmod +x env
 ./env
+sudo ln -s ~/.poetry/bin/poetry /usr/local/bin/poetry
 echo 'export PATH=$PATH:~/.poetry/bin' >> ~/.bashrc
 echo 'poetry installed'
 
