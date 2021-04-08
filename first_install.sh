@@ -236,6 +236,9 @@ Icon=/opt/intellij/bin/idea.png" | sudo tee /usr/share/applications/intellij.des
 fi
 echo 'intellij installed'
 
+#install Angular CLI
+npm i -g @angular/cli
+
 
 #source .bashrc and be done ==================================================
 source ~/.bashrc
