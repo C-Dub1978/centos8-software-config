@@ -223,6 +223,16 @@ if [ -f $INTELLIJ ]; then
 	sudo tar -xf $INTELLIJ -C /opt/intellij --strip-components=1
 	rm ~/Downloads/$INTELLIJ
 	sudo ln -s /opt/intellij/bin/idea.sh /usr/local/bin/intellij
+	echo "[Desktop Entry]
+Version=13.0
+Type=Application
+Terminal=false
+Icon[en_US]=/opt/intellij/bin/idea.png
+Name[en_US]=IntelliJ
+Exec=/opt/intellij/bin/idea.sh
+Name=IntelliJ
+Icon=/opt/intellij/bin/idea.png" | sudo tee /usr/share/applications/intellij.desktop
+	sudo chmod 644 /usr/share/applications/intellij.desktop
 fi
 echo 'intellij installed'
 
