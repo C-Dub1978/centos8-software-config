@@ -6,7 +6,7 @@ sudo yum install -y yum-utils
 sudo dnf install wget -y
 sudo dnf groupinstall "Development Tools" -y
 sudo yum install git -y
-sudo dnf install bzip2-devel expat-devel gdbm-devel \
+sudo dnf install bzip2-devel expat-devel gdbm-devel ntfs-3g p7zip \
     ncurses-devel openssl-devel readline-devel wget \
     sqlite-devel tk-devel xz-devel zlib-devel libffi-devel epel-release -y
 
@@ -25,12 +25,22 @@ echo 'source ~/.bash_prompt' >> ~/.bashrc
 echo 'bash prompt'
 
 #download and install chrome ===========================================
-CHROME="google-chrome-stable_current_x86_64.rpm"
-cd ~/Downloads
-wget https://dl.google.com/linux/direct/${CHROME}
-sudo dnf localinstall ${CHROME} -y
-rm ${CHROME}
-echo 'chrome installed'
+CHROMEREPO=/etc/yum.repos.d/google-chrome.repo
+if test "$CHROMEREPO" != true; then
+	echo "[google-chrome]
+name=google-chrome
+baseurl=http://dl.google.com/linux/chrome/rpm/stable/x86_64
+enabled=1
+gpgcheck=1
+gpgkey=https://dl-ssl.google.com/linux/linux_signing_key.pub" | sudo tee "$CHROMEREPO"
+
+sudo yum install google-chrome-stable -y
+fi
+echo 'Chrome installation successful'
+
+wget "http://mirror.centos.org/centos/7/os/x86_64/Packages/chrome-gnome-shell-10.1-4.el7.x86_64.rpm"
+sudo ln -s /usr/bin/python3 /usr/bin/python
+sudo rpm -i --nodeps chrome-gnome-shell-10.1-4.el7.x86_64.rpm
 
 #install vscode ========================================================
 sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
@@ -56,13 +66,6 @@ echo 'export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-11.0.9.11-3.el8_3.x86_64' >>
 echo 'export PATH=$PATH:$JAVA_HOME/bin' >> ~/.bashrc
 echo 'openjdk 11 installed'
 
-#install Slack =========================================================
-cd ~/Downloads
-wget https://downloads.slack-edge.com/linux_releases/slack-4.14.0-0.1.fc21.x86_64.rpm
-sudo dnf localinstall ./slack-*.rpm -y
-rm ~/Downloads/slack-*.rpm
-echo 'slack installed'
-
 #install Maven =========================================================
 MVN='apache-maven-3.6.3-bin.tar.gz'
 cd ~/Downloads
@@ -84,10 +87,6 @@ nvm install 12
 nvm use 12
 echo 'export PATH=$PATH:/$HOME/.nvm' >> ~/.bashrc
 echo 'nvm and node installed'
-
-#install Yarn ===========================================================
-npm install -g yarn
-echo 'yarn installed'
 
 #install Docker(latest) and docker-compose ==============================
 sudo yum remove docker \
@@ -127,34 +126,21 @@ echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc
 echo 'golang installed'
 
 #install Python3.8 ========================================================
-VERSION=3.8.9
-cd ~/Downloads
-wget https://www.python.org/ftp/python/${VERSION}/Python-${VERSION}.tgz
-if test ~/Downloads/Python-${VERSION}.tgz; then
-	echo 'Expanding python tarball for install'
-	sudo tar -xvzf ~/Downloads/Python-${VERSION}.tgz
-	rm ~/Downloads/Python-${VERSION}.tgz
-	cd Python-${VERSION}
-	./configure --enable-optimizations
-	make -j 8
-	sudo make altinstall
-	sudo rm -rf ~/Downloads/Python-${VERSION}
-fi
-echo 'python installed'
+#VERSION=3.8.9
+#cd ~/Downloads
+#wget https://www.python.org/ftp/python/${VERSION}/Python-${VERSION}.tgz
+#if test ~/Downloads/Python-${VERSION}.tgz; then
+#	echo 'Expanding python tarball for install'
+#	sudo tar -xvzf ~/Downloads/Python-${VERSION}.tgz
+#	rm ~/Downloads/Python-${VERSION}.tgz
+#	cd Python-${VERSION}
+#	./configure --enable-optimizations
+#	make -j 8
+#	sudo make altinstall
+#	sudo rm -rf ~/Downloads/Python-${VERSION}
+#fi
+#echo 'python installed'
 
-#install Poetry 1.1 ========================================================
-curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3.8
-cd ~/.poetry
-chmod +x env
-./env
-sudo ln -s ~/.poetry/bin/poetry /usr/local/bin/poetry
-echo 'export PATH=$PATH:~/.poetry/bin' >> ~/.bashrc
-echo 'poetry installed'
-
-#install Keybase(latest) ===================================================
-sudo yum install https://prerelease.keybase.io/keybase_amd64.rpm -y
-run_keybase
-echo 'keybase installed'
 
 #install kubectl(latest) and helm(latest) ==================================
 sudo bash -c 'cat <<EOF > /etc/yum.repos.d/kubernetes.repo
@@ -169,11 +155,6 @@ EOF'
 sudo yum install -y kubectl
 curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
 echo 'kube and helm installed'
-
-#install Kind 0.10 =========================================================
-cd ~/
-go get sigs.k8s.io/kind
-echo 'kind installed'
 
 #install AWS cli ===========================================================
 cd ~/Downloads
@@ -208,9 +189,6 @@ fi
 
 if [ ! -d ~/Projects ]; then
 	mkdir ~/Projects
-fi
-if [ ! -d ~/Projects/SingleMusic ]; then
-	mkdir ~/Projects/SingleMusic
 fi
 echo 'ssh key generated'
 
